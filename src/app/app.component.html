@@ -1,0 +1,108 @@
+<nav class="navbar navbar-default navbar-static-top">
+	<div class="container">
+		<div class="navbar-header">
+
+			<!-- Collapsed Hamburger -->
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse" aria-expanded="false">
+				<span class="sr-only">Toggle Navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+			<!-- Branding Image -->
+			<a class="navbar-brand" routerLink="/" style="padding: 0px 15px;">
+				<img src="img/logo.png" alt="Logo" style="width: 75px;">
+			</a>
+			<a class="navbar-brand" routerLink="/">
+				{{ appName }}
+			</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="app-navbar-collapse">
+			<!-- Left Side Of Navbar -->
+			<ul class="nav navbar-nav">
+				<ng-container *ngIf="permissao && permissao != 'INATIVO'">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+							Links
+						</a>
+						<ul class="dropdown-menu">
+							<ng-container *ngIf="permissao == 'USUARIO' || permissao == 'ADMINISTRADOR'">
+								<li>
+									<a routerLink="/">
+										Para User
+									</a>
+								</li>
+							</ng-container>
+							<ng-container *ngIf="permissao == 'ADMINISTRADOR'">
+								<li>
+									<a routerLink="/">
+										Para Admin
+									</a>
+								</li>								
+							</ng-container>
+						</ul>
+					</li>
+				</ng-container>
+				<ng-container *ngIf="permissao && permissao == 'ADMINISTRADOR'">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+							Administração 
+						</a>
+						<ul class="dropdown-menu">
+							<li>
+								<a routerLink="/users">
+									Usuários
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ng-container>
+				&nbsp;
+			</ul>
+
+			<!-- Right Side Of Navbar -->
+			<ul class="nav navbar-nav navbar-right">
+				<!-- Authentication Links -->
+				<ng-container *ngIf="!isLogado">
+					<li><a href="/login">Login</a></li>
+					<li><a href="/register">Cadastrar</a></li>
+				</ng-container>
+				<ng-container *ngIf="isLogado">
+					<li *ngIf="usuarioHackAdmin"><a href="#" style="background-color: red; color: white;" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+						Administrador Logado como: </a></li>
+					<li class="dropdown">
+						<a href="#" [ngClass]="{vermelho: usuarioHackAdmin}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+							{{ username }} 
+						</a>
+
+						<ul class="dropdown-menu">
+                            <li>
+                                <a routerLink="/painel">
+                                    Painel do Usuário
+                                </a>
+                            </li>
+							<li>
+								<a href="/logout"
+									onclick="event.preventDefault();
+												document.getElementById('logout-form').submit();">
+									Logout
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ng-container>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
+<div id="app">
+    
+<div class="container">
+    <router-outlet></router-outlet>
+</div>
+	
+</div>

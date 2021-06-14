@@ -1,0 +1,61 @@
+<div class="row">
+	<div class="col-md-6 col-md-offset-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">Painel do Usuário</div>
+			<div style="margin: 15px;">	
+				<div class="alert alert-info  alert-dismissible show" [ngClass]="{'alert-info': !erroAviso, 'alert-danger': erroAviso}" *ngIf="aviso">
+					<strong *ngIf="!erroAviso">Informação!</strong><strong *ngIf="erroAviso">Falha!</strong> {{aviso}}
+					<button type="button" class="close" aria-label="Close" style="top: -9px;" (click)="aviso = '';">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<label for="login-edit">Login</label>
+				<input id="login-edit" type="text" [value]="usuario.login" class="form-control" name="login-edit" autocomplete="login" size="60" disabled>
+				<p></p>	
+
+				<label for="name-edit">Nome</label>
+				<input id="name-edit" type="text" [(ngModel)]="usuario.name" class="form-control" name="name-edit" autocomplete="name" size="60" [disabled]="!editandoFlag || !editavel">
+				<p></p>		
+
+				<label for="email-edit">Endereço de E-Mail</label>
+				<input id="email-edit" type="email" [(ngModel)]="usuario.email" class="form-control" name="email-edit" autocomplete="email" size="60" [disabled]="!editandoFlag || !editavel">
+				<p></p>
+			</div>
+			<div class="panel-footer">
+				<button *ngIf="!editandoFlag" type="button" class="btn btn-primary botao-barra" (click)="editandoFlag = true;"  [disabled]="!editavel">Editar</button>
+				<button *ngIf="editandoFlag" type="button" class="btn btn-success botao-barra" (click)="editarUsuario()" [disabled]="!editavel">Confirmar</button>
+				<button *ngIf="editandoFlag" type="button" class="btn btn-secondary botao-barra" (click)="editandoFlag = false;"  [disabled]="!editavel">Cancelar</button>
+				<button *ngIf="!editandoFlag" type="button" class="btn btn-warning" [disabled]="!editavel" style="float: right;" data-toggle="modal" data-target="#dialogResetSenha">Redefinir Senha</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dialogResetSenha" tabindex="-1" role="dialog" aria-labelledby="dialogResetSenhaTitle"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" redimensionar="60" style="overflow: hidden; width: 330px;" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">Redefinir Senha</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" >
+				<label for="password-edit">Senha</label>
+				<input id="password-edit" type="password" [(ngModel)]="usuario.password" class="form-control"
+					name="password" autocomplete="nova-senha">
+
+				<label for="password-confirm-edit">Confirmar Senha</label>
+				<input id="password-confirm-edit" type="password" [(ngModel)]="usuario.password_confirmation"
+					class="form-control" name="password_confirmation" autocomplete="nova-senha">
+				<p></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success botao-barra" (click)="redefinirSenha()"
+					[disabled]="!editavel">Confirmar</button>
+				<button type="button" class="btn btn-secondary botao-barra" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>

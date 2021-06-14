@@ -1,0 +1,229 @@
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<div class="panel panel-default">
+			<div class="panel-heading">Usuários</div>
+			<table class="table">
+				<caption>
+					<table>
+						<tr>
+							<td class="col-md-1"><label for="filtro" class="col-md-1 control-label">Buscar:</label></td>
+							<td class="col-md-8"><input id="filtro" type="text" class="form-control" name="filtro"
+									[(ngModel)]="criteria" autofocus></td>
+						</tr>
+					</table>
+				</caption>
+				<colgroup>
+					<col width="50px" />
+					<col width="50%" />
+					<col width="170px" />
+					<col width="50%" />
+					<col width="135px" />
+					<col width="39px" />
+					<col width="39px" />
+					<col width="39px" />
+					<col width="135px" />
+					<col width="15px" />
+				</colgroup>
+				<thead class="thead-light">
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Nome</th>
+						<th scope="col">Login</th>
+						<th scope="col">Email</th>
+						<th scope="col">Permissão</th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+					</tr>
+				</thead>
+			</table>
+			<div redimensionar="310" style="overflow-y:scroll">
+				<table class="table">
+					<colgroup>
+						<col width="50px" />
+						<col width="50%" />
+						<col width="170px" />
+						<col width="50%" />
+						<col width="135px" />
+						<col width="39px" />
+						<col width="39px" />
+						<col width="39px" />
+						<col width="135px" />
+					</colgroup>
+					<tbody>
+						<tr *ngFor="let u of (usuarios | filtroUsuario:criteria)">
+							<td>{{u.id}}</td>
+							<td class="celula-trunca-texto" title="{{u.name}}">{{u.name}}</td>
+							<td class="celula-trunca-texto" title="{{u.login}}">{{u.login}}</td>
+							<td class="celula-trunca-texto" title="{{u.email}}">{{u.email}}</td>
+							<td *ngIf="usuarioTemp.id != u.id || !setPermissaoFlag">{{u.permissao}}</td>
+							<td *ngIf="usuarioTemp.id != u.id || !setPermissaoFlag">
+								<button type="button" class="btn btn-primary botao-reduzido" title="Alterar Permissão"
+									(click)="habilitarEdicaoPermissao(u.clone())">
+									<span class="glyphicon glyphicon-user"></span>
+								</button>
+							</td>
+							<td colspan="2" *ngIf="usuarioTemp.id == u.id && setPermissaoFlag">
+								<select id="selectPermissao" class="form-control form-control-micro"
+									(change)="alterarPermissao()" (blur)="resetEdit()"
+									[(ngModel)]="usuarioTemp.permissao">
+									<option value="ADMINISTRADOR">ADMINISTRADOR</option>
+									<option value="USUARIO">USUARIO</option>
+									<option value="INATIVO">INATIVO</option>
+								</select>
+							</td>
+							<td>
+								<button (click)="selecionarUsuario(u)" class="btn btn-primary botao-reduzido"
+									data-toggle="modal" data-target="#dialogEditarUsuario" title="Editar">
+									<span class="glyphicon glyphicon-edit"></span>
+								</button>
+							</td>
+							<td>
+								<button (click)="selecionarUsuario(u)" class="btn btn-primary botao-reduzido"
+									data-toggle="modal" data-target="#dialogResetSenha" title="Redefinir Senha">
+									<span class="glyphicon glyphicon-list-alt"></span>
+								</button>
+							</td>
+							<td style="padding-left: 2px;">
+								<form name="form-logar-como-{{u.id}}" action="/users/logarcomo/{{u.id}}" method="GET">
+									<button (click)="submeterLogarComo(u.id)" class="btn btn-primary botao-reduzido"
+										style="width: 125px;">
+										<span class="glyphicon glyphicon-education"></span>
+										LOGAR COMO
+									</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+					<tfoot class="status-tabela">
+						<tr *ngIf="status == LOADING">
+							<td colspan="6"><i>Carregando Usuários...</i></td>
+						</tr>
+						<tr *ngIf="usuarios != null && (usuarios).length == 0 && status == COMPLETE">
+							<td colspan="6"><i>Não Há Usuários para serem listadas</i></td>
+						</tr>
+						<tr *ngIf="status == ERROR">
+							<td class="erro" colspan="6"><i>Falha na obtenção de Usuários!</i></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<button type="button" class="btn btn-primary botao-barra" data-toggle="modal"
+					data-target="#dialogNovoUsuario" (click)="resetEdit()" [disabled]="!editavel">Novo</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dialogNovoUsuario" tabindex="-1" role="dialog" aria-labelledby="dialogNovoUsuarioTitle"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" redimensionar="60" style="overflow: hidden;" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">Novo Usuário</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" style="width: 500px;">
+
+				<label for="login">Login</label>
+				<input id="login" type="text" [(ngModel)]="usuarioTemp.login" class="form-control" name="login"
+					value="login" autocomplete="login" size="60" autofocus>
+				<p></p>
+
+				<label for="name">Nome</label>
+				<input id="name" type="text" [(ngModel)]="usuarioTemp.name" class="form-control" name="name"
+					value="name" autocomplete="name" size="60">
+				<p></p>
+
+				<label for="email">Endereço de E-Mail</label>
+				<input id="email" type="email" [(ngModel)]="usuarioTemp.email" class="form-control" name="email"
+					value="email" autocomplete="email" size="60">
+				<p></p>
+
+				<label for="password">Senha</label>
+				<input id="password" type="password" [(ngModel)]="usuarioTemp.password" class="form-control"
+					name="password" autocomplete="new-password" size="60">
+				<p></p>
+
+				<label for="password-confirm">Confirmar Senha</label>
+				<input id="password-confirm" type="password" [(ngModel)]="usuarioTemp.password_confirmation"
+					class="form-control" name="password_confirmation" autocomplete="new-password" size="60">
+				<p></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary botao-barra" (click)="novoUsuario()"
+					[disabled]="!editavel">Criar</button>
+				<button type="button" class="btn btn-secondary botao-barra" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dialogEditarUsuario" tabindex="-1" role="dialog" aria-labelledby="dialogEditarUsuarioTitle"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" redimensionar="60" style="overflow: hidden;" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">Editar Usuário</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" style="width: 500px;">
+				<label for="login-edit">Login</label>
+				<input id="login-edit" type="text" [(ngModel)]="usuarioTemp.login" class="form-control"
+					name="login-edit" autocomplete="login" size="60" autofocus>
+				<p></p>
+
+				<label for="name-edit">Nome</label>
+				<input id="name-edit" type="text" [(ngModel)]="usuarioTemp.name" class="form-control" name="name-edit"
+					autocomplete="name" size="60">
+				<p></p>
+
+				<label for="email-edit">Endereço de E-Mail</label>
+				<input id="email-edit" type="email" [(ngModel)]="usuarioTemp.email" class="form-control"
+					name="email-edit" autocomplete="email" size="60">
+				<p></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success botao-barra" (click)="editarUsuario()"
+					[disabled]="!editavel">Editar</button>
+				<button type="button" class="btn btn-secondary botao-barra" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dialogResetSenha" tabindex="-1" role="dialog" aria-labelledby="dialogResetSenhaTitle"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" redimensionar="60" style="overflow: hidden; width: 330px;" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">Redefinir Senha</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" >
+				<label for="password-edit">Senha</label>
+				<input id="password-edit" type="password" [(ngModel)]="usuarioTemp.password" class="form-control"
+					name="password" autocomplete="nova-senha">
+
+				<label for="password-confirm-edit">Confirmar Senha</label>
+				<input id="password-confirm-edit" type="password" [(ngModel)]="usuarioTemp.password_confirmation"
+					class="form-control" name="password_confirmation" autocomplete="nova-senha">
+				<p></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success botao-barra" (click)="redefinirSenha()"
+					[disabled]="!editavel">Confirmar</button>
+				<button type="button" class="btn btn-secondary botao-barra" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>
